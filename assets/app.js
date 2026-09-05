@@ -27,6 +27,29 @@ window.initUI=function(){
     },{rootMargin:'0px 0px -6% 0px', threshold:.04});
     els.forEach(function(e,i){ e.style.transitionDelay=(i%3*70)+'ms'; io.observe(e) });
   }
+  // 목차 클릭 연출
+  var tocEl=document.getElementById('toc');
+  if(tocEl && !matchMedia('(prefers-reduced-motion:reduce)').matches){
+    tocEl.addEventListener('click',function(ev){
+      var a=ev.target.closest('a'); if(!a) return;
+      tocEl.classList.remove('firing'); void tocEl.offsetWidth;
+      [].forEach.call(tocEl.querySelectorAll('a'),function(x){x.classList.remove('hit')});
+      a.classList.add('hit'); tocEl.classList.add('firing');
+      setTimeout(function(){ tocEl.classList.remove('firing'); a.classList.remove('hit') },760);
+      var href=a.getAttribute('href');
+      if(href && href.charAt(0)==='#'){
+        var t=document.querySelector(href);
+        if(t){
+          ev.preventDefault();
+          t.classList.remove('landed'); void t.offsetWidth; t.classList.add('landed');
+          scrollTo({top:href==='#top'?0:t.getBoundingClientRect().top+scrollY,behavior:'smooth'});
+          history.replaceState(null,'',href);
+          setTimeout(function(){t.classList.remove('landed')},1400);
+        }
+      }
+    });
+  }
+
   // 우측 목차 현재 위치 표시
   var links=[].slice.call(document.querySelectorAll('.toc a[data-t]'));
   var secs=links.map(function(a){return a.dataset.t?document.getElementById(a.dataset.t):null});

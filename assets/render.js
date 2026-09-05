@@ -22,11 +22,13 @@
   }
   function footer(){return '<footer><div class="wrap"><span>주휘진 · HWIJIN JOO</span><span>GAME DESIGNER</span></div></footer>'}
 
-  function toc(items){
+  function toc(items,start){
+    var n = start==null?1:start;
     return '<nav class="toc" id="toc" aria-label="목차"><ul>'+items.map(function(it,i){
       return '<li><a href="'+it[0]+'" data-t="'+(it[2]||'')+'">'+
-        '<span class="i">'+String(i+1).padStart(2,'0')+'</span>'+
-        '<span class="t">'+esc(it[1])+'</span></a></li>'}).join('')+'</ul></nav>';
+        '<span class="i">'+String(n+i).padStart(2,'0')+'</span>'+
+        '<span class="t">'+esc(it[1])+'</span>'+
+        '<span class="bar" aria-hidden="true"></span></a></li>'}).join('')+'</ul></nav>';
   }
 
   /* ---------- index ---------- */
@@ -70,7 +72,8 @@
     jobs+'<ul class="misc rv" style="margin-top:52px">'+aw+'</ul></div></section>'+
     '<section id="contact"><div class="wrap"><div class="sec-head rv"><span class="idx mono">03 / CONTACT</span><h2>연락처</h2></div>'+
     '<div class="contact-grid">'+cc+'</div></div></section></main>'+
-    toc([['#work','프로젝트','work'],['#career','경력','career'],['#contact','연락처','contact']])+footer();
+    toc([['#top','자기소개','top'],['#work','프로젝트','work'],
+         ['#career','경력','career'],['#contact','연락처','contact']],0)+footer();
   }
 
   /* ---------- 상세 ---------- */

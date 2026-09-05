@@ -237,31 +237,49 @@ table.wt tr.skl td{font-family:var(--mono); font-size:12.5px; color:var(--fg-dim
 @media (prefers-reduced-motion:reduce){.gate-box.shake{animation:none}}
 
 /* ── 우측 목차 레일 ── */
-.toc{position:fixed; right:36px; top:50%; transform:translateY(-50%); z-index:15; display:none}
-.toc ul{display:grid; gap:22px}
-.toc a{display:flex; align-items:baseline; gap:12px; justify-content:flex-end;
-  color:var(--fg-dim); transition:color var(--t)}
-.toc .i{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--fg-dim);
-  transition:color var(--t)}
-.toc .t{font-size:17px; font-weight:600; letter-spacing:-.01em; position:relative; padding-right:0;
-  transition:color var(--t), padding-right var(--t)}
-.toc .t::after{content:""; position:absolute; right:0; top:50%; width:0; height:1px;
+.toc{position:fixed; right:40px; top:50%; transform:translateY(-50%); z-index:15; display:none}
+.toc ul{display:grid; gap:14px}
+.toc a{position:relative; display:flex; align-items:baseline; gap:14px; justify-content:flex-end;
+  color:var(--fg-dim); transition:color var(--t), transform var(--t)}
+.toc .i{font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--fg-dim);
+  transition:color var(--t), opacity var(--t); opacity:.65}
+.toc .t{font-size:clamp(21px,1.95vw,30px); font-weight:700; letter-spacing:-.025em; line-height:1.25;
+  position:relative; padding-right:0; transition:color var(--t), padding-right var(--t)}
+.toc .t::after{content:""; position:absolute; right:0; top:50%; width:0; height:2px;
   background:var(--accent); transition:width var(--t)}
 .toc a:hover{color:var(--fg)}
-.toc a:hover .t{padding-right:22px}
-.toc a:hover .t::after{width:14px}
+.toc a:hover .i{opacity:1}
+.toc a:hover .t{padding-right:26px}
+.toc a:hover .t::after{width:16px}
 .toc a[aria-current="true"]{color:var(--fg)}
-.toc a[aria-current="true"] .i{color:var(--accent)}
-.toc a[aria-current="true"] .t{padding-right:28px}
-.toc a[aria-current="true"] .t::after{width:20px}
-@media (min-width:1280px){
-  body{padding-right:116px}
-  .nav{padding-right:116px}
-  .hero-bg, .phead-bg{right:-116px}
-  .toc{display:block; right:26px}
-  .nav ul li:not(:last-child){display:none}
+.toc a[aria-current="true"] .i{color:var(--accent); opacity:1}
+.toc a[aria-current="true"] .t{padding-right:34px}
+.toc a[aria-current="true"] .t::after{width:24px}
+
+/* 클릭 연출 */
+.toc .bar{position:absolute; right:0; top:50%; height:2px; width:0; background:var(--accent);
+  opacity:0; pointer-events:none}
+.toc.firing a:not(.hit){opacity:.22; transform:translateX(10px);
+  transition:opacity 260ms ease, transform 260ms cubic-bezier(.2,.7,.3,1)}
+.toc.firing a.hit{color:var(--fg)}
+.toc.firing a.hit .i{color:var(--accent); opacity:1}
+.toc.firing a.hit .t{animation:tocPop 620ms cubic-bezier(.2,.8,.25,1)}
+.toc.firing a.hit .bar{animation:tocSweep 620ms cubic-bezier(.3,.9,.2,1)}
+@keyframes tocPop{
+  0%{transform:translateX(0)} 28%{transform:translateX(-14px)} 100%{transform:translateX(0)} }
+@keyframes tocSweep{
+  0%{width:0; opacity:1} 40%{width:180px; opacity:1} 100%{width:0; opacity:0} }
+
+/* 도착 섹션 반응 */
+.landed > .wrap > .sec-head, .landed .hero-row{animation:landIn 900ms cubic-bezier(.2,.7,.3,1)}
+@keyframes landIn{
+  0%{transform:translateY(10px); opacity:.5} 100%{transform:none; opacity:1} }
+
+@media (prefers-reduced-motion:reduce){
+  .toc .t{transition:none}
+  .toc.firing a:not(.hit){opacity:1; transform:none}
+  .toc.firing a.hit .t,.toc.firing a.hit .bar,.landed > .wrap > .sec-head,.landed .hero-row{animation:none}
 }
-@media (prefers-reduced-motion:reduce){.toc .t{transition:none}}
 
 /* ── 초안 미리보기 배너 ── */
 .draft-bar{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:60;
@@ -274,3 +292,11 @@ table.wt tr.skl td{font-family:var(--mono); font-size:12.5px; color:var(--fg-dim
 .draft-bar button:hover,.draft-bar a:hover{filter:brightness(1.12)}
 @media (max-width:640px){.draft-bar{left:12px; right:12px; transform:none; justify-content:center;
   flex-wrap:wrap; white-space:normal; border-radius:16px; padding:12px}}
+
+@media (min-width:1360px){
+  body{padding-right:190px}
+  .nav{padding-right:190px}
+  .hero-bg, .phead-bg{right:-190px}
+  .toc{display:block}
+  .nav ul li:not(:last-child){display:none}
+}
