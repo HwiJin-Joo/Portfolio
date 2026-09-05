@@ -1,4 +1,7 @@
 (function(){
+  var DRAFT=null;
+  try{ var d=localStorage.getItem('site-draft'); if(d) DRAFT=JSON.parse(d); }catch(e){}
+  if(DRAFT) window.SITE=DRAFT;
   var S=window.SITE, $=function(s,r){return (r||document).querySelector(s)};
   var esc=function(t){return String(t==null?'':t)};
   function el(h){var d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstChild}
@@ -112,5 +115,17 @@
 
   var page=document.body.dataset.page;
   if(page==='index') renderIndex(); else renderProject(page);
+  if(DRAFT){
+    var bar=el('<div class="draft-bar">초안 미리보기 — 이 브라우저에서만 보입니다'+
+      '<button type="button" id="draftDrop">초안 버리기</button>'+
+      '<a href="editor.html">편집기로</a></div>');
+    document.body.appendChild(bar);
+    bar.querySelector('#draftDrop').onclick=function(){
+      if(confirm('저장하지 않은 수정 내용이 사라집니다. 계속할까요?')){
+        try{ localStorage.removeItem('site-draft') }catch(e){}
+        location.reload();
+      }
+    };
+  }
   if(window.initUI) window.initUI();
 })();
