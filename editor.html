@@ -74,6 +74,19 @@ code{font-family:var(--mono);font-size:12.5px;background:var(--pan2);padding:2px
   <button class="sm" id="undo">되돌리기</button>
   <button class="sm p" id="save2">저장 (data.js 내려받기)</button></div>
 <input type="file" id="file" accept=".js" hidden>
+<script src="assets/gate.js"></script>
+<script>
+(function(){
+  var ok=false;
+  try{ ok = sessionStorage.getItem('edit-ok')===window.PW_HASH }catch(x){}
+  if(ok) return;
+  document.documentElement.innerHTML='<body style="margin:0;background:#0B0C0F;color:#EDEFF3;'+
+   'font:15px/1.7 -apple-system,system-ui,\'Malgun Gothic\',sans-serif;display:flex;align-items:center;'+
+   'justify-content:center;height:100vh;text-align:center"><div><p style="margin:0 0 14px">편집기는 첫 화면의 '+
+   '<b>편집</b> 버튼을 통해 열어 주세요.</p><a href="index.html" style="color:#FF4B33">← 사이트로 돌아가기</a></div></body>';
+  throw new Error('gate');
+})();
+</script>
 <script src="data.js"></script>
 <script>
 var D=JSON.parse(JSON.stringify(window.SITE)), HIST=[], IMGS=D.images||[];

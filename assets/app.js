@@ -1,4 +1,6 @@
 window.initUI=function(){
+  var eb=document.getElementById('editBtn');
+  if(eb) eb.addEventListener('click',function(){ if(window.openGate) window.openGate() });
   var nav=document.getElementById('nav');
   if(nav) addEventListener('scroll',function(){ nav.classList.toggle('stuck', scrollY>8) },{passive:true});
   var tabs=[].slice.call(document.querySelectorAll('.tab'));
@@ -24,6 +26,19 @@ window.initUI=function(){
       es.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target) } })
     },{rootMargin:'0px 0px -6% 0px', threshold:.04});
     els.forEach(function(e,i){ e.style.transitionDelay=(i%3*70)+'ms'; io.observe(e) });
+  }
+  // 우측 목차 현재 위치 표시
+  var links=[].slice.call(document.querySelectorAll('.toc a[data-t]'));
+  var secs=links.map(function(a){return a.dataset.t?document.getElementById(a.dataset.t):null});
+  links.forEach(function(a){ if(a.dataset.t==='__self') a.setAttribute('aria-current','true') });
+  if(secs.some(Boolean)){
+    var mark=function(){
+      var best=-1, line=innerHeight*0.35;
+      secs.forEach(function(s,i){ if(s && s.getBoundingClientRect().top<=line) best=i });
+      if(best<0) best=0;
+      links.forEach(function(a,i){ a.setAttribute('aria-current', i===best) });
+    };
+    addEventListener('scroll',mark,{passive:true}); addEventListener('resize',mark); mark();
   }
   reveal();
   if(location.hash && location.hash.length>1){

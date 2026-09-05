@@ -13,9 +13,18 @@
       ? '<li><a class="cta" href="'+esc(S.meta.notion)+'">경력기술서</a></li>'
       : '<li><a class="cta" href="index.html#contact">연락처</a></li>';
     return '<nav class="nav" id="nav"><div class="wrap">'+
-      '<a class="brand" href="index.html">JOO<span>.</span>HWIJIN</a><ul>'+links+cta+'</ul></div></nav>';
+      '<div class="brand-wrap"><a class="brand" href="index.html">JOO<span>.</span>HWIJIN</a>'+
+      '<button type="button" class="edit-btn" id="editBtn" title="사이트 내용 수정">편집</button></div>'+
+      '<ul>'+links+cta+'</ul></div></nav>';
   }
   function footer(){return '<footer><div class="wrap"><span>주휘진 · HWIJIN JOO</span><span>GAME DESIGNER</span></div></footer>'}
+
+  function toc(items){
+    return '<nav class="toc" id="toc" aria-label="목차"><ul>'+items.map(function(it,i){
+      return '<li><a href="'+it[0]+'" data-t="'+(it[2]||'')+'">'+
+        '<span class="i">'+String(i+1).padStart(2,'0')+'</span>'+
+        '<span class="t">'+esc(it[1])+'</span></a></li>'}).join('')+'</ul></nav>';
+  }
 
   /* ---------- index ---------- */
   function renderIndex(){
@@ -57,7 +66,8 @@
     '<section id="career"><div class="wrap"><div class="sec-head rv"><span class="idx mono">02 / CAREER</span><h2>경력</h2></div>'+
     jobs+'<ul class="misc rv" style="margin-top:52px">'+aw+'</ul></div></section>'+
     '<section id="contact"><div class="wrap"><div class="sec-head rv"><span class="idx mono">03 / CONTACT</span><h2>연락처</h2></div>'+
-    '<div class="contact-grid">'+cc+'</div></div></section></main>'+footer();
+    '<div class="contact-grid">'+cc+'</div></div></section></main>'+
+    toc([['#work','프로젝트','work'],['#career','경력','career'],['#contact','연락처','contact']])+footer();
   }
 
   /* ---------- 상세 ---------- */
@@ -95,7 +105,9 @@
       '<a class="back" href="index.html">← 전체 프로젝트</a><h1>'+esc(p.name)+'</h1>'+
       '<p class="genre">'+esc(p.genre)+'</p><dl class="psum">'+sm+'</dl></div></header>'+
       '<div class="tabs"><div class="wrap" role="tablist">'+tabs+'</div></div>'+
-      '<main class="blocks"><div class="wrap">'+blocks+'</div></main>'+footer();
+      '<main class="blocks"><div class="wrap">'+blocks+'</div></main>'+
+      toc([['index.html','전체 프로젝트','']].concat(S.projects.map(function(x){
+        return [x.id+'.html', x.name, x.id===id?'__self':'']}))) + footer();
   }
 
   var page=document.body.dataset.page;

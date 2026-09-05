@@ -210,3 +210,55 @@ table.wt tr.skl td{font-family:var(--mono); font-size:12.5px; color:var(--fg-dim
   *{transition-duration:.01ms !important}
   .rv{opacity:1; transform:none}
 }
+
+/* ── 편집기 게이트 ── */
+.edit-btn{font-size:12px; font-weight:600; padding:6px 12px; border-radius:999px;
+  border:1px solid var(--line); color:var(--fg-dim); background:transparent; cursor:pointer;
+  font-family:inherit; transition:color var(--t), border-color var(--t); margin-left:14px}
+.edit-btn:hover{color:var(--fg); border-color:var(--line-2)}
+.nav .brand-wrap{display:flex; align-items:center}
+.gate{position:fixed; inset:0; z-index:100; background:rgba(var(--bg-rgb),.82);
+  backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:24px}
+.gate-box{width:100%; max-width:360px; background:var(--panel); border:1px solid var(--line-2);
+  border-radius:16px; padding:28px}
+.gate-box.shake{animation:gshake 320ms}
+@keyframes gshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.gate-h{font-size:17px; font-weight:700; letter-spacing:-.01em}
+.gate-d{margin:8px 0 20px; font-size:13.5px; color:var(--fg-dim); line-height:1.6}
+.gate input{width:100%; font:inherit; font-size:15px; color:var(--fg); background:var(--bg-2);
+  border:1px solid var(--line); border-radius:10px; padding:11px 13px}
+.gate input:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:transparent}
+.gate-e{margin:10px 0 0; font-size:13px; color:var(--accent)}
+.gate-btns{display:flex; gap:8px; margin-top:20px}
+.gate-btns button{flex:1; font:inherit; font-size:13.5px; font-weight:600; padding:11px;
+  border-radius:9px; cursor:pointer; border:1px solid var(--line-2); background:transparent; color:var(--fg)}
+.gate-btns .g-ok{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.gate-btns button:hover{filter:brightness(1.1)}
+@media (prefers-reduced-motion:reduce){.gate-box.shake{animation:none}}
+
+/* ── 우측 목차 레일 ── */
+.toc{position:fixed; right:36px; top:50%; transform:translateY(-50%); z-index:15; display:none}
+.toc ul{display:grid; gap:22px}
+.toc a{display:flex; align-items:baseline; gap:12px; justify-content:flex-end;
+  color:var(--fg-dim); transition:color var(--t)}
+.toc .i{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--fg-dim);
+  transition:color var(--t)}
+.toc .t{font-size:17px; font-weight:600; letter-spacing:-.01em; position:relative; padding-right:0;
+  transition:color var(--t), padding-right var(--t)}
+.toc .t::after{content:""; position:absolute; right:0; top:50%; width:0; height:1px;
+  background:var(--accent); transition:width var(--t)}
+.toc a:hover{color:var(--fg)}
+.toc a:hover .t{padding-right:22px}
+.toc a:hover .t::after{width:14px}
+.toc a[aria-current="true"]{color:var(--fg)}
+.toc a[aria-current="true"] .i{color:var(--accent)}
+.toc a[aria-current="true"] .t{padding-right:28px}
+.toc a[aria-current="true"] .t::after{width:20px}
+@media (min-width:1280px){
+  body{padding-right:116px}
+  .nav{padding-right:116px}
+  .hero-bg, .phead-bg{right:-116px}
+  .toc{display:block; right:26px}
+  .nav ul li:not(:last-child){display:none}
+}
+@media (prefers-reduced-motion:reduce){.toc .t{transition:none}}
