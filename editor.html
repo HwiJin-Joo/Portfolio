@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사이트 편집기 — 주휘진 포트폴리오</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--bg:#0B0C0F;--pan:#14161C;--pan2:#1B1E26;--fg:#EDEFF3;--mid:#A7AEBA;--dim:#7A8291;
+ --line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.18);--ac:#FF4B33;--ok:#3DD68C;
+ --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,"Malgun Gothic",sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 var(--sans)}
+header{position:sticky;top:0;z-index:30;background:rgba(11,12,15,.94);backdrop-filter:blur(12px);
+ border-bottom:1px solid var(--line);padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header h1{font-size:15px;margin:0;font-weight:700;letter-spacing:-.01em}
+header .sp{flex:1}
+button{font:inherit;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px;
+ border:1px solid var(--line2);background:transparent;color:var(--fg);cursor:pointer}
+button:hover{border-color:var(--ac)}
+button.p{background:var(--ac);border-color:var(--ac);color:#0A0B0D}
+button.sm{padding:5px 10px;font-size:12px}
+button.del{color:#FF8A78;border-color:rgba(255,120,100,.35)}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 120px}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 20px;border-bottom:1px solid var(--line);
+ position:sticky;top:57px;background:rgba(11,12,15,.94);backdrop-filter:blur(12px);z-index:29}
+nav.tabs button{white-space:nowrap;border-radius:999px}
+nav.tabs button[aria-selected=true]{background:var(--ac);border-color:var(--ac);color:#0A0B0D}
+section{display:none}section.on{display:block}
+h2{font-size:19px;margin:26px 0 6px;letter-spacing:-.01em}
+h2:first-child{margin-top:8px}
+p.hint{color:var(--dim);font-size:13px;margin:0 0 16px}
+.card{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.card>.hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.card>.hd .t{font-weight:700;font-size:15px;flex:1}
+.card .cat{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+label{display:block;margin-bottom:12px}
+label>span{display:block;font:600 11px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+input,textarea,select{width:100%;font:inherit;font-size:14px;color:var(--fg);background:var(--pan2);
+ border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--ac);outline-offset:1px;border-color:transparent}
+textarea{resize:vertical;min-height:64px;line-height:1.55}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.list{display:grid;gap:8px}
+.li{display:flex;gap:8px;align-items:flex-start}
+.li textarea,.li input{flex:1}
+.imgs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.slot{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--pan2)}
+.slot .ph{aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:12px}
+.slot img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top center;display:block}
+.slot select{border:0;border-top:1px solid var(--line);border-radius:0;font-size:12px;padding:7px 9px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(11,12,15,.96);backdrop-filter:blur(12px);
+ border-top:1px solid var(--line);padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar .msg{color:var(--dim);font-size:13px;flex:1;min-width:200px}
+.bar .msg b{color:var(--ok)}
+details.help{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--pan);margin-bottom:20px}
+details.help summary{cursor:pointer;font-weight:700;font-size:14px}
+details.help ol{margin:12px 0 0;padding-left:20px;color:var(--mid);font-size:14px}
+details.help li{margin-bottom:7px}
+code{font-family:var(--mono);font-size:12.5px;background:var(--pan2);padding:2px 6px;border-radius:5px}
+@media(max-width:760px){.row,.row3{grid-template-columns:1fr}.imgs{grid-template-columns:1fr}}
+</style>
+</head><body>
+<header>
+  <h1>포트폴리오 편집기</h1>
+  <span class="sp"></span>
+  <button id="load">data.js 불러오기</button>
+  <button id="prev">미리보기</button>
+  <button class="p" id="save">data.js 내려받기</button>
+</header>
+<nav class="tabs" id="tabs"></nav>
+<div class="wrap" id="body"></div>
+<div class="bar"><span class="msg" id="msg">불러오는 중…</span>
+  <button class="sm" id="undo">되돌리기</button>
+  <button class="sm p" id="save2">저장 (data.js 내려받기)</button></div>
+<input type="file" id="file" accept=".js" hidden>
+<script src="data.js"></script>
+<script>
+var D=JSON.parse(JSON.stringify(window.SITE)), HIST=[], IMGS=D.images||[];
+var $=function(s){return document.querySelector(s)}, msg=$('#msg');
+function say(t,good){msg.innerHTML = good ? '<b>'+t+'</b>' : t}
+function snap(){HIST.push(JSON.stringify(D)); if(HIST.length>40)HIST.shift()}
+function touched(){say('수정됨 — 저장하려면 아래 [저장] 을 누르세요')}
+
+function inp(v,on,ta,ph){
+  var e=document.createElement(ta?'textarea':'input'); e.value=v==null?'':v; if(ph)e.placeholder=ph;
+  e.addEventListener('input',function(){on(e.value); touched()});
+  e.addEventListener('focus',snap); return e;
+}
+function field(lab,v,on,ta,ph){
+  var l=document.createElement('label'); var s=document.createElement('span'); s.textContent=lab;
+  l.appendChild(s); l.appendChild(inp(v,on,ta,ph)); return l;
+}
+function listEditor(arr,get,set,lab,ta){
+  var box=document.createElement('div'); box.className='list';
+  function draw(){
+    box.innerHTML='';
+    arr.forEach(function(_,i){
+      var r=document.createElement('div'); r.className='li';
+      r.appendChild(inp(get(arr[i]),function(v){set(arr,i,v)},ta));
+      var d=document.createElement('button'); d.className='sm del'; d.textContent='삭제';
+      d.onclick=function(){snap(); arr.splice(i,1); draw(); touched()};
+      r.appendChild(d); box.appendChild(r);
+    });
+    var a=document.createElement('button'); a.className='sm'; a.textContent='+ '+lab+' 추가';
+    a.onclick=function(){snap(); arr.push(typeof arr[0]==='object'&&arr[0]!==null?JSON.parse(JSON.stringify(arr[0])):''); draw(); touched()};
+    box.appendChild(a);
+  }
+  draw(); return box;
+}
+function imgSlots(arr,n){
+  var box=document.createElement('div'); box.className='imgs';
+  for(var i=0;i<n;i++)(function(i){
+    var s=document.createElement('div'); s.className='slot';
+    var cur=arr[i]||'';
+    var prev=document.createElement(cur?'img':'div');
+    if(cur){prev.src='img/'+cur; prev.loading='lazy'} else {prev.className='ph'; prev.textContent='비어 있음'}
+    var sel=document.createElement('select');
+    sel.innerHTML='<option value="">— 없음 —</option>'+IMGS.map(function(f){
+      return '<option value="'+f+'"'+(f===cur?' selected':'')+'>'+f+'</option>'}).join('');
+    sel.onchange=function(){
+      snap();
+      var v=sel.value; arr[i]=v;
+      for(var k=arr.length-1;k>=0;k--) if(!arr[k]) arr.splice(k,1);
+      var np=document.createElement(v?'img':'div');
+      if(v){np.src='img/'+v} else {np.className='ph'; np.textContent='비어 있음'}
+      s.replaceChild(np,s.firstChild); touched();
+    };
+    s.appendChild(prev); s.appendChild(sel); box.appendChild(s);
+  })(i);
+  return box;
+}
+function card(title,cat){
+  var c=document.createElement('div'); c.className='card';
+  var h=document.createElement('div'); h.className='hd';
+  if(cat){var g=document.createElement('span'); g.className='cat'; g.textContent=cat; h.appendChild(g)}
+  var t=document.createElement('span'); t.className='t'; t.textContent=title; h.appendChild(t);
+  c.appendChild(h); return c;
+}
+
+/* ---- 탭 ---- */
+var TABS=[['hero','첫 화면'],['stats','핵심 지표'],['skills','핵심 역량'],
+          ['p0','비스트블러드'],['p1','NOMANUAL'],['career','경력'],['contact','연락처']];
+var cur='hero';
+function drawTabs(){
+  $('#tabs').innerHTML='';
+  TABS.forEach(function(t){
+    var b=document.createElement('button'); b.textContent=t[1];
+    b.setAttribute('aria-selected', t[0]===cur);
+    b.onclick=function(){cur=t[0]; drawTabs(); draw()};
+    $('#tabs').appendChild(b);
+  });
+}
+function draw(){
+  var B=$('#body'); B.innerHTML='';
+  var h2=function(t,hint){var e=document.createElement('h2'); e.textContent=t; B.appendChild(e);
+    if(hint){var p=document.createElement('p'); p.className='hint'; p.textContent=hint; B.appendChild(p)}};
+
+  if(cur==='hero'){
+    h2('첫 화면','방문자가 처음 보는 문구입니다. <b>태그</b>로 굵게 표시할 수 있습니다.');
+    var c=card('히어로');
+    c.appendChild(field('킥커 (작은 윗줄)',D.hero.kicker,function(v){D.hero.kicker=v}));
+    var r=document.createElement('div'); r.className='row';
+    r.appendChild(field('큰 제목 1행',D.hero.h1a,function(v){D.hero.h1a=v}));
+    r.appendChild(field('큰 제목 2행 (강조색)',D.hero.h1b,function(v){D.hero.h1b=v}));
+    c.appendChild(r);
+    c.appendChild(field('설명문',D.hero.lede,function(v){D.hero.lede=v},true));
+    var r2=document.createElement('div'); r2.className='row';
+    ['portrait','bg'].forEach(function(k,i){
+      var l=document.createElement('label'); var s=document.createElement('span');
+      s.textContent=i?'배경 이미지':'프로필 사진'; l.appendChild(s);
+      var sel=document.createElement('select');
+      sel.innerHTML=IMGS.map(function(f){return '<option'+(f===D.hero[k]?' selected':'')+'>'+f+'</option>'}).join('');
+      sel.onchange=function(){snap(); D.hero[k]=sel.value; touched()};
+      l.appendChild(sel); r2.appendChild(l);
+    });
+    c.appendChild(r2); B.appendChild(c);
+  }
+
+  if(cur==='stats'){
+    h2('핵심 지표','첫 화면 아래 숫자 줄. 3~4개 권장. 설명에 <br> 로 줄바꿈.');
+    D.stats.forEach(function(s,i){
+      var c=card('지표 '+(i+1));
+      var d=document.createElement('button'); d.className='sm del'; d.textContent='삭제';
+      d.onclick=function(){snap(); D.stats.splice(i,1); draw(); touched()};
+      c.querySelector('.hd').appendChild(d);
+      c.appendChild(field('숫자',s.n,function(v){s.n=v}));
+      c.appendChild(field('설명',s.l,function(v){s.l=v},true));
+      B.appendChild(c);
+    });
+    var a=document.createElement('button'); a.textContent='+ 지표 추가';
+    a.onclick=function(){snap(); D.stats.push({n:'0',l:'설명'}); draw(); touched()};
+    B.appendChild(a);
+  }
+
+  if(cur==='skills'){
+    h2('핵심 역량','체크한 것만 강조색으로 표시됩니다. 앞쪽 3~4개만 체크하세요.');
+    var c=card('역량 태그');
+    var box=document.createElement('div'); box.className='list';
+    function ds(){
+      box.innerHTML='';
+      D.skills.forEach(function(s,i){
+        var r=document.createElement('div'); r.className='li';
+        r.appendChild(inp(s.t,function(v){s.t=v}));
+        var lb=document.createElement('label'); lb.style.cssText='margin:0;display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:13px;color:var(--mid)';
+        var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!s.key; cb.style.width='16px';
+        cb.onchange=function(){snap(); s.key=cb.checked; touched()};
+        lb.appendChild(cb); lb.appendChild(document.createTextNode('강조'));
+        r.appendChild(lb);
+        var d=document.createElement('button'); d.className='sm del'; d.textContent='삭제';
+        d.onclick=function(){snap(); D.skills.splice(i,1); ds(); touched()};
+        r.appendChild(d); box.appendChild(r);
+      });
+      var a=document.createElement('button'); a.className='sm'; a.textContent='+ 역량 추가';
+      a.onclick=function(){snap(); D.skills.push({t:'새 역량',key:false}); ds(); touched()};
+      box.appendChild(a);
+    }
+    ds(); c.appendChild(box); B.appendChild(c);
+  }
+
+  if(cur==='p0'||cur==='p1'){
+    var p=D.projects[cur==='p0'?0:1];
+    h2(p.name+' — 요약','첫 화면 프로젝트 카드에 들어가는 내용입니다.');
+    var c=card('프로젝트 정보');
+    var r=document.createElement('div'); r.className='row';
+    r.appendChild(field('이름',p.name,function(v){p.name=v}));
+    r.appendChild(field('장르',p.genre,function(v){p.genre=v}));
+    c.appendChild(r);
+    var lb=document.createElement('label'); var sp=document.createElement('span'); sp.textContent='대표 이미지'; lb.appendChild(sp);
+    var sel=document.createElement('select');
+    sel.innerHTML=IMGS.map(function(f){return '<option'+(f===p.hero?' selected':'')+'>'+f+'</option>'}).join('');
+    sel.onchange=function(){snap(); p.hero=sel.value; touched()};
+    lb.appendChild(sel); c.appendChild(lb);
+    B.appendChild(c);
+
+    var c2=card('주요 업무 (카드에 표시)');
+    p.duties.forEach(function(d,i){
+      var r=document.createElement('div'); r.className='row';
+      r.appendChild(field('제목',d[0],function(v){d[0]=v}));
+      r.appendChild(field('설명',d[1],function(v){d[1]=v},true));
+      var w=document.createElement('div'); w.appendChild(r);
+      var del=document.createElement('button'); del.className='sm del'; del.textContent='이 항목 삭제';
+      del.onclick=function(){snap(); p.duties.splice(i,1); draw(); touched()};
+      w.appendChild(del); w.style.marginBottom='14px'; c2.appendChild(w);
+    });
+    var a2=document.createElement('button'); a2.className='sm'; a2.textContent='+ 업무 추가';
+    a2.onclick=function(){snap(); p.duties.push(['제목','설명']); draw(); touched()};
+    c2.appendChild(a2); B.appendChild(c2);
+
+    var c3=card('성과 (카드에 표시)');
+    c3.appendChild(listEditor(p.outcomes,function(x){return x},function(a,i,v){a[i]=v},'성과',true));
+    B.appendChild(c3);
+
+    h2('업무 이력 '+p.blocks.length+'건','상세 페이지의 표와 이미지입니다. 카테고리를 바꾸면 탭이 자동으로 재계산됩니다.');
+    var labels={}; p.cats.forEach(function(x){labels[x[0]]=x[1]});
+    p.blocks.forEach(function(b,i){
+      var c=card(b.heading, labels[b.cat]||b.cat);
+      var del=document.createElement('button'); del.className='sm del'; del.textContent='삭제';
+      del.onclick=function(){ if(confirm('“'+b.heading+'” 을(를) 삭제할까요?')){snap(); p.blocks.splice(i,1); draw(); touched()} };
+      c.querySelector('.hd').appendChild(del);
+      var r=document.createElement('div'); r.className='row';
+      r.appendChild(field('업무명',b.heading,function(v){b.heading=v}));
+      var lb=document.createElement('label'); var s=document.createElement('span'); s.textContent='카테고리'; lb.appendChild(s);
+      var sel=document.createElement('select');
+      sel.innerHTML=p.cats.filter(function(x){return x[0]!=='all'}).map(function(x){
+        return '<option value="'+x[0]+'"'+(x[0]===b.cat?' selected':'')+'>'+x[1]+'</option>'}).join('');
+      sel.onchange=function(){snap(); b.cat=sel.value; draw(); touched()};
+      lb.appendChild(sel); r.appendChild(lb); c.appendChild(r);
+      c.appendChild(field('한 줄 설명',b.title,function(v){b.title=v}));
+      c.appendChild(field('기간',b.period,function(v){b.period=v}));
+      var sr=document.createElement('label'); var ss=document.createElement('span'); ss.textContent='역할'; sr.appendChild(ss);
+      c.appendChild(sr); c.appendChild(listEditor(b.roles,function(x){return x},function(a,j,v){a[j]=v},'역할',true));
+      c.appendChild(field('성과',b.result,function(v){b.result=v},true));
+      c.appendChild(field('기술',b.skills,function(v){b.skills=v}));
+      var il=document.createElement('label'); var is=document.createElement('span');
+      is.textContent='이미지 (첫 번째가 크게 표시)'; il.appendChild(is); c.appendChild(il);
+      c.appendChild(imgSlots(b.images,3));
+      B.appendChild(c);
+    });
+    var ab=document.createElement('button'); ab.textContent='+ 업무 이력 추가';
+    ab.onclick=function(){snap(); p.blocks.push({cat:p.cats[1][0],heading:'새 업무',title:'',period:'',roles:[''],result:'',skills:'',images:[]}); draw(); touched()};
+    B.appendChild(ab);
+  }
+
+  if(cur==='career'){
+    h2('경력','회사 단위 이력입니다.');
+    D.career.forEach(function(j,i){
+      var c=card(j.co);
+      var del=document.createElement('button'); del.className='sm del'; del.textContent='삭제';
+      del.onclick=function(){snap(); D.career.splice(i,1); draw(); touched()};
+      c.querySelector('.hd').appendChild(del);
+      var r=document.createElement('div'); r.className='row3';
+      r.appendChild(field('기간',j.when,function(v){j.when=v}));
+      r.appendChild(field('직무',j.role,function(v){j.role=v}));
+      r.appendChild(field('회사',j.co,function(v){j.co=v}));
+      c.appendChild(r);
+      c.appendChild(field('설명',j.desc,function(v){j.desc=v},true));
+      B.appendChild(c);
+    });
+    var a=document.createElement('button'); a.textContent='+ 경력 추가';
+    a.onclick=function(){snap(); D.career.push({when:'',role:'',co:'',desc:''}); draw(); touched()};
+    B.appendChild(a);
+    h2('수상 · 수료 · 그 외');
+    var c2=card('목록');
+    D.awards.forEach(function(w,i){
+      var r=document.createElement('div'); r.className='li'; r.style.marginBottom='8px';
+      var y=inp(w[0],function(v){w[0]=v}); y.style.maxWidth='90px'; r.appendChild(y);
+      r.appendChild(inp(w[1],function(v){w[1]=v},true));
+      var d=document.createElement('button'); d.className='sm del'; d.textContent='삭제';
+      d.onclick=function(){snap(); D.awards.splice(i,1); draw(); touched()};
+      r.appendChild(d); c2.appendChild(r);
+    });
+    var a2=document.createElement('button'); a2.className='sm'; a2.textContent='+ 항목 추가';
+    a2.onclick=function(){snap(); D.awards.push(['2024','내용']); draw(); touched()};
+    c2.appendChild(a2); B.appendChild(c2);
+  }
+
+  if(cur==='contact'){
+    h2('연락처','공개 사이트에 그대로 노출됩니다. 전화번호를 빼려면 [삭제] 를 누르세요.');
+    D.contact.forEach(function(k,i){
+      var c=card(k[0]);
+      var del=document.createElement('button'); del.className='sm del'; del.textContent='삭제';
+      del.onclick=function(){snap(); D.contact.splice(i,1); draw(); touched()};
+      c.querySelector('.hd').appendChild(del);
+      var r=document.createElement('div'); r.className='row3';
+      r.appendChild(field('라벨',k[0],function(v){k[0]=v}));
+      r.appendChild(field('표시 내용',k[1],function(v){k[1]=v}));
+      r.appendChild(field('링크',k[2],function(v){k[2]=v}));
+      c.appendChild(r); B.appendChild(c);
+    });
+    var a=document.createElement('button'); a.textContent='+ 연락처 추가';
+    a.onclick=function(){snap(); D.contact.push(['라벨','내용','https://',false]); draw(); touched()};
+    B.appendChild(a);
+  }
+}
+
+function save(){
+  D.images=IMGS;
+  var blob=new Blob(['window.SITE = '+JSON.stringify(D,null,1)+';\n'],{type:'text/javascript'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='data.js'; a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
+  say('data.js 내려받음 — 사이트 폴더의 기존 data.js 에 덮어쓰세요',true);
+}
+$('#save').onclick=save; $('#save2').onclick=save;
+$('#prev').onclick=function(){ window.open('index.html','_blank') };
+$('#undo').onclick=function(){ if(!HIST.length){say('되돌릴 내용이 없습니다');return}
+  D=JSON.parse(HIST.pop()); IMGS=D.images||IMGS; draw(); say('한 단계 되돌렸습니다') };
+$('#load').onclick=function(){ $('#file').click() };
+$('#file').onchange=function(){
+  var f=this.files[0]; if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var t=r.result.replace(/^\s*window\.SITE\s*=\s*/,'').replace(/;\s*$/,'');
+      var o=JSON.parse(t); snap(); D=o; IMGS=D.images||IMGS; draw();
+      say('불러왔습니다 — '+f.name,true);
+    }catch(e){ say('읽지 못했습니다: '+e.message) }
+  };
+  r.readAsText(f,'utf-8'); this.value='';
+};
+drawTabs(); draw();
+say('준비됨. 수정 후 [저장] 을 누르면 data.js 파일이 내려받아집니다.');
+</script>
+</body></html>
